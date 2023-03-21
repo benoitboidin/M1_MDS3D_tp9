@@ -42,12 +42,20 @@ void Mesh::subdivide()
     
   }
 
-  for (auto f : _halfedge.faces()) {
-    // On peut déjà tester ce code en créant un triangle dans le nouveau maillage 
-    // pour chaque triangle initial (via la fonction add_triangle).
-  
-    
+  for (Surface_mesh::Face f : _halfedge.faces()) {
+    Surface_mesh::Vertex_around_face_circulator fvend = _halfedge.vertices(f);
+    Surface_mesh::Vertex_around_face_circulator fvit = fvend;
+    Surface_mesh::Vertex v0 = *fvit;
+    ++fvit;
+    Surface_mesh::Vertex v2 = *fvit;
+    Surface_mesh::Vertex  v1;
 
+    do {
+        v1 = v2;
+        ++fvit;
+        v2 = *fvit;
+        current_mesh.add_triangle(v0,v1,v2);
+    } while (++fvit != fvend);
   }
 
   // Il faut penser à remplacer _halfedge par current_mesh dans la suite de la boucle, 
