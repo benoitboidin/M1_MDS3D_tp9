@@ -16,24 +16,48 @@ void Mesh::subdivide()
 {
   // TODO 
 
-  // Plus simple d'utiliser deux structures half-edges : une pour le niveau courant et une pour le niveau suivant.
+  // Plus simple d'utiliser deux structures half-edges : 
+  // une pour le niveau courant et une pour le niveau suivant.
   // Il faut maintenair un mapping entre les deux.
 
   // Commencer par l'étape 3 de l'algorithme : 
   // Créer une nouvelle instance de Surface_mesh et y ajouter les somments courants. 
 
-  // Mesh current_mesh;
-  // for (auto v : _halfedge.vertices()) {
-  // 	// ... le type de v est Surface_mesh::Vertex
-  //   // qui représente simplement le numéro du sommet
-  //   // que l'on peut obtenir avec v.idx()
-  //   current_mesh. 
+  Surface_mesh current_mesh;
+  Surface_mesh::Vertex_property<Point> positions = _halfedge.get_vertex_property<Point>("v:point");
+  auto vertex_mapping = _halfedge.add_vertex_property<Surface_mesh::Vertex>("v:mapping");
 
+  for (auto v : _halfedge.vertices()) {
 
-  // }
+  	// ... le type de v est Surface_mesh::Vertex
+    // qui représente simplement le numéro du sommet
+    // que l'on peut obtenir avec v.idx().
 
+    Vector3f pos = positions[v];
+    Surface_mesh::Vertex new_v = current_mesh.add_vertex(pos);
+    vertex_mapping[v] = new_v;
+    
+    // Stocker le mapping entre les sommets courants 
+    // et les sommets de la nouvelle structure.
+    
+  }
 
+  for (auto f : _halfedge.faces()) {
+    // On peut déjà tester ce code en créant un triangle dans le nouveau maillage 
+    // pour chaque triangle initial (via la fonction add_triangle).
+  
+    
 
+  }
+
+  // Il faut penser à remplacer _halfedge par current_mesh dans la suite de la boucle, 
+  // et recharger les bbuffers OpenGL.
+  current_mesh.update_face_normals();
+  current_mesh.update_vertex_normals();
+  
+  _halfedge = current_mesh;
+  updateHalfedgeToMesh();
+  updateVBO();
 }
 
 Mesh::~Mesh()
