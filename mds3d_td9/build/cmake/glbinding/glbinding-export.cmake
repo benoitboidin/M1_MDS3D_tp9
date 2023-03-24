@@ -52,7 +52,7 @@ add_library(::glbinding STATIC IMPORTED)
 set_target_properties(::glbinding PROPERTIES
   INTERFACE_COMPILE_DEFINITIONS "\$<\$<NOT:\$<BOOL:OFF>>:GLBINDING_STATIC_DEFINE>;SYSTEM_DARWIN"
   INTERFACE_COMPILE_OPTIONS "-Wall;-Wextra;-Wunused;-Wreorder;-Wignored-qualifiers;-Wmissing-braces;-Wreturn-type;-Wswitch;-Wswitch-default;-Wuninitialized;-Wmissing-field-initializers;\$<\$<CXX_COMPILER_ID:GNU>:;-Wmaybe-uninitialized;\$<\$<VERSION_GREATER:\$<CXX_COMPILER_VERSION>,4.8>:;-Wpedantic;-Wreturn-local-addr;>;>;\$<\$<CXX_COMPILER_ID:Clang>:;-Wpedantic;-Wreturn-stack-address;>;\$<\$<PLATFORM_ID:Darwin>:;-pthread;>"
-  INTERFACE_INCLUDE_DIRECTORIES "/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/ext/glbinding/include;/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/include"
+  INTERFACE_INCLUDE_DIRECTORIES "/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/ext/glbinding/include;/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/include"
   INTERFACE_LINK_LIBRARIES "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk/System/Library/Frameworks/OpenGL.framework;/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk/System/Library/Frameworks/OpenGL.framework"
 )
 
@@ -60,7 +60,7 @@ set_target_properties(::glbinding PROPERTIES
 set_property(TARGET ::glbinding APPEND PROPERTY IMPORTED_CONFIGURATIONS NOCONFIG)
 set_target_properties(::glbinding PROPERTIES
   IMPORTED_LINK_INTERFACE_LANGUAGES_NOCONFIG "CXX"
-  IMPORTED_LOCATION_NOCONFIG "/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/libglbinding.a"
+  IMPORTED_LOCATION_NOCONFIG "/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/libglbinding.a"
   )
 
 # This file does not depend on other imported targets which have

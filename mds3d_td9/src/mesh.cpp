@@ -14,59 +14,140 @@ using namespace surface_mesh;
 
 void Mesh::subdivide()
 {
-  // TODO 
+//   // TODO 
 
-  // Plus simple d'utiliser deux structures half-edges : 
-  // une pour le niveau courant et une pour le niveau suivant.
-  // Il faut maintenair un mapping entre les deux.
+//   // Plus simple d'utiliser deux structures half-edges : 
+//   // une pour le niveau courant et une pour le niveau suivant.
+//   // Il faut maintenair un mapping entre les deux.
 
-  // Commencer par l'étape 3 de l'algorithme : 
-  // Créer une nouvelle instance de Surface_mesh et y ajouter les somments courants. 
-
-  Surface_mesh current_mesh;
+  Surface_mesh new_mesh;
   Surface_mesh::Vertex_property<Point> positions = _halfedge.get_vertex_property<Point>("v:point");
-  auto vertex_mapping = _halfedge.add_vertex_property<Surface_mesh::Vertex>("v:mapping");
+//   auto vertex_mapping = _halfedge.add_vertex_property<Surface_mesh::Vertex>("v:mapping");
 
-  for (auto v : _halfedge.vertices()) {
+//   for (auto v : _halfedge.vertices()) {
+//   	// ... le type de v est Surface_mesh::Vertex
+//     // qui représente simplement le numéro du sommet
+//     // que l'on peut obtenir avec v.idx().
+//     Vector3f pos = positions[v];
+//     Surface_mesh::Vertex new_v = new_mesh.add_vertex(pos);
 
-  	// ... le type de v est Surface_mesh::Vertex
-    // qui représente simplement le numéro du sommet
-    // que l'on peut obtenir avec v.idx().
+//     // Stocker le mapping entre les sommets courants 
+//     // et les sommets de la nouvelle structure.
+//     vertex_mapping[v] = new_v;    
+//   }
 
-    Vector3f pos = positions[v];
-    Surface_mesh::Vertex new_v = current_mesh.add_vertex(pos);
-    vertex_mapping[v] = new_v;
-    
-    // Stocker le mapping entre les sommets courants 
-    // et les sommets de la nouvelle structure.
-    
-  }
+//   for (Surface_mesh::Face f : _halfedge.faces()) {
+//     Surface_mesh::Vertex_around_face_circulator fvend = _halfedge.vertices(f);
+//     Surface_mesh::Vertex_around_face_circulator fvit = fvend;
+//     Surface_mesh::Vertex v0 = *fvit;
+//     ++fvit;
+//     Surface_mesh::Vertex v2 = *fvit;
+//     Surface_mesh::Vertex  v1;
 
-  for (Surface_mesh::Face f : _halfedge.faces()) {
-    Surface_mesh::Vertex_around_face_circulator fvend = _halfedge.vertices(f);
-    Surface_mesh::Vertex_around_face_circulator fvit = fvend;
-    Surface_mesh::Vertex v0 = *fvit;
-    ++fvit;
-    Surface_mesh::Vertex v2 = *fvit;
-    Surface_mesh::Vertex  v1;
+//     do {
+//         v1 = v2;
+//         ++fvit;
+//         v2 = *fvit;
+//         new_mesh.add_triangle(v0,v1,v2);
+//     } while (++fvit != fvend);
+//   }
 
-    do {
-        v1 = v2;
-        ++fvit;
-        v2 = *fvit;
-        current_mesh.add_triangle(v0,v1,v2);
-    } while (++fvit != fvend);
-  }
+//   // Subdivision.
+//   Surface_mesh subdivided_mesh;
+//   Surface_mesh::Edge_property<Surface_mesh::Vertex> edge_mapping = _halfedge.add_edge_property<Surface_mesh::Vertex>("e:mapping");
 
-  // Il faut penser à remplacer _halfedge par current_mesh dans la suite de la boucle, 
-  // et recharger les bbuffers OpenGL.
-  current_mesh.update_face_normals();
-  current_mesh.update_vertex_normals();
+//   // Itérer sur les arêtes. 
+//   for (Surface_mesh::Edge e : new_mesh.edges()){
+//     Vector3f v0, v1, v2, v3;
+//     v0 = new_mesh.vertex(e, 0);
+//     v1 = new_mesh.vertex(e, 1);
+//     v2 = new_mesh.vertex(new_mesh.halfedge(e, 0));
+//     v3 = new_mesh.vertex(new_mesh.halfedge(e, 1));
+
+//     Vector3f new_pos = (3/8*v0 + 3/8*v1 + 1/8*v2 + 1/8*v3);
+//   }
+
+    surface_mesh::Surface_mesh mesh;
+
+  /* ---------------------------------------------------------------------------------------------- */
+
+  Surface_mesh::Vertex_property<Surface_mesh::Vertex> vertex_mapping = 
+  _halfedge.add_vertex_property<Surface_mesh::Vertex>("v:mapping");
   
-  _halfedge = current_mesh;
+  for(Surface_mesh::Vertex vi : _halfedge.vertices()){ 
+
+    int d = 0;
+    Vector3f sum(0,0,0);
+    Surface_mesh::Halfedge h = _halfedge.halfedge(vi);
+
+    do{
+      Surface_mesh::Halfedge hoppo = _halfedge.opposite_halfedge(h);
+      Surface_mesh::Halfedge hnext = _halfedge.next_halfedge(hoppo);
+      h = hnext;
+      d++;
+      sum += _halfedge.position(_halfedge.to_vertex(h));
+    }while(h != _halfedge.halfedge(vi));
+
+    float Beta = d>3.0 ? (1.0/d)*( (5.0/8.0)-(((3.0/8.0)+(1.0/4.0)*cos((2*M_PI)/d)) * ((3.0/8.0)+(1.0/4.0)*cos((2*M_PI)/d))) ) : 3.0/16.0;
+
+    surface_mesh::Point v1pos = (1.0-Beta *d)*_halfedge.position(vi) + Beta*sum;
+    Surface_mesh::Vertex v1 = mesh.add_vertex(v1pos);
+    vertex_mapping[vi] = v1;
+  }
+
+  /* ---------------------------------------------------------------------------------------------- */
+
+  Surface_mesh::Edge_property<Surface_mesh::Vertex> edge_mapping = 
+  _halfedge.add_edge_property<Surface_mesh::Vertex>("e:mapping");
+  
+  for(Surface_mesh::Edge ei : _halfedge.edges()){ 
+    
+    Surface_mesh::Halfedge h = _halfedge.halfedge(ei, 0);
+
+    Vector3f v0 = _halfedge.position(_halfedge.to_vertex(h));
+    Vector3f v1 = _halfedge.position(_halfedge.to_vertex(_halfedge.next_halfedge(_halfedge.opposite_halfedge(h))));
+    Vector3f v2 = _halfedge.position(_halfedge.to_vertex(_halfedge.opposite_halfedge(h)));
+    Vector3f v3 = _halfedge.position(_halfedge.to_vertex(_halfedge.next_halfedge(h)));
+    
+    Vector3f u = (3.0/8.0) * (v0 + v2) + (1.0/8.0) * (v1 + v3);
+    Surface_mesh::Vertex e1 = mesh.add_vertex(u); 
+    edge_mapping[ei] = e1; 
+  }
+
+  /* ---------------------------------------------------------------------------------------------- */
+
+  for(Surface_mesh::Face fi : _halfedge.faces()){ 
+    Surface_mesh::Halfedge h = _halfedge.halfedge(fi);
+      
+    Surface_mesh::Vertex v0 = vertex_mapping[_halfedge.to_vertex(h)];
+    Surface_mesh::Vertex u1 = edge_mapping[_halfedge.edge(h)];
+
+    h = _halfedge.next_halfedge(h);
+
+    Surface_mesh::Vertex v3 = vertex_mapping[_halfedge.to_vertex(h)];
+    Surface_mesh::Vertex u4 = edge_mapping[_halfedge.edge(h)];
+
+    h = _halfedge.next_halfedge(h);
+
+    Surface_mesh::Vertex v2 = vertex_mapping[_halfedge.to_vertex(h)];
+    Surface_mesh::Vertex u2 = edge_mapping[_halfedge.edge(h)];
+
+    mesh.add_triangle(v0,u4,u1);
+    mesh.add_triangle(u4,v3,u2);
+    mesh.add_triangle(u2,v2,u1);
+    mesh.add_triangle(u1,u4,u2);
+  }
+
+  // Il faut penser à remplacer _halfedge par new_mesh dans la suite de la boucle, 
+  // et recharger les bbuffers OpenGL.
+  new_mesh.update_face_normals();
+  new_mesh.update_vertex_normals();
+  
+  _halfedge = new_mesh;
   updateHalfedgeToMesh();
   updateVBO();
 }
+
 
 Mesh::~Mesh()
 {

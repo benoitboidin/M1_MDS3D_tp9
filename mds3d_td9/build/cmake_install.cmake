@@ -1,4 +1,4 @@
-# Install script for directory: /Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9
+# Install script for directory: /Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,9 +39,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/ext/glfw/cmake_install.cmake")
-  include("/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/cmake_install.cmake")
-  include("/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/ext/SOIL/cmake_install.cmake")
+  include("/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/ext/glfw/cmake_install.cmake")
+  include("/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/ext/glbinding/cmake_install.cmake")
+  include("/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/ext/SOIL/cmake_install.cmake")
 
 endif()
 
@@ -53,5 +53,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

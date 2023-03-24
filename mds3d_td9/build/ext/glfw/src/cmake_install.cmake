@@ -1,4 +1,4 @@
-# Install script for directory: /Users/benoitboidin/Desktop/s8_info/3d/tp9/mds3d_td9/ext/glfw/src
+# Install script for directory: /Users/benoitboidin/Documents/professionnel/études/master_informatique/s8_info/3d/tp9/mds3d_td9/ext/glfw/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
